@@ -1,5 +1,9 @@
 # OpenNRE for NLP course, autumn 2018
 
+Step 0, remove cache:
+
+    rm -r _processed_data
+    
 First, we need to setup an environment:
 
     conda create -n envname --file requirements.txt
