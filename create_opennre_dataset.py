@@ -60,7 +60,7 @@ for block in blocks:
         e1, e2 = e2, e1
 
     elif rel_line == 'Other':
-        rel_type = 'no_relation'
+        rel_type = 'NA'
 
     else:
         raise Exception('Cannot parse relation: {}'.format(block))
@@ -113,8 +113,10 @@ print(len(all_rels))
 
 ## create rel2id
 rel2id = {'NA': 0}
+all_rels_set = set(all_rels)
+all_rels_set.remove('NA')
 i = 1
-for rel_type in all_rels:
+for rel_type in all_rels_set:
     rel2id[rel_type] = i
     i = i + 1
 
