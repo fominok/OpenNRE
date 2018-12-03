@@ -33,3 +33,4 @@ mv train.json $SE_DATASET/test.json
 rm rel2id.json
 
 cp word_vec.json $SE_DATASET/
+mkdir test_result
