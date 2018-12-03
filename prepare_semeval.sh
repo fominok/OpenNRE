@@ -22,7 +22,7 @@ cd ..
 
 rm $SE_FILE
 
-mv $SE_TEMP/scorer $SE_TEST/
+mv $SE_TEMP/scorer.pl $SE_TEST/
 
 python3 create_opennre_dataset.py $SE_TEMP/train.txt
 mv train.json $SE_DATASET/
