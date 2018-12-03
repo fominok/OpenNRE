@@ -20,3 +20,11 @@ Provided script will download SemEval 2010 dataset and convert it:
 Launch training with:
 
     python train_demo.py semeval pcnn att
+    
+Wait until it finish or interrupt freely, then test it:
+
+    python test_demo.py semeval pcnn att
+    
+Another provided script will prepare data and execute SemEval's scorer:
+
+    sh score_semeval.sh
