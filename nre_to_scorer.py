@@ -14,12 +14,12 @@ with open('data/semeval/test.json') as f:
 answers = {}
 for i, t in enumerate(test_data):
     sent = t['sentence']
-    e1_index = sent.find('e1')
-    e2_index = sent.find('e2')
-    assert e1_index and e2_index
+    e1_index = sent.find(t['head']['word'])
+    e2_index = sent.find(t['tail']['word'])
+    assert e1_index is not None and e2_index is not None
     order_direct = e1_index < e2_index
-    entpair_1 = t['head' if order_direct else 'tail']['id']
-    entpair_2 = t['tail' if order_direct else 'head']['id']
+    entpair_1 = t['head']['id']
+    entpair_2 = t['tail']['id']
     h = {
         'order_direct': order_direct,
         'relation_text': t['relation'],
@@ -45,13 +45,13 @@ with open('answer_keys.txt', 'w') as f:
         if rel_text == 'NA':
             rel = 'Other'
         else:
-            rel = rel_text + '(e1,e2)' if a['order_direct'] else '(e2,e1)'
+            rel = rel_text + ('(e1,e2)' if a['order_direct'] else '(e2,e1)')
         f.write(str(a['index']) + '\t' + rel + '\n')
 
 with open('proposed_anwsers.txt', 'w') as f:
     for entpair, p in test_results_best.items():
         a = answers[entpair]
         order_direct = a['order_direct']
-        rel = rels_rev[p['relation']] + '(e1,e2)' if order_direct else '(e2,e1)'
+        rel = rels_rev[p['relation']] + ('(e1,e2)' if order_direct else '(e2,e1)')
         index = a['index']
         f.write(str(index) + '\t' + rel + '\n')
