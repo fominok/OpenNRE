@@ -48,7 +48,7 @@ for block in blocks:
 
     e1 = re.search('<e1>(.*)</e1>', main).group(1).strip()
     e2 = re.search('<e2>(.*)</e2>', main).group(1).strip()
-    cl = main.replace('<e1> ', '').replace('<e2> ', '').replace(' </e1>', '').replace(' </e2>', '')
+    cl = main.replace('<e1>', '').replace('<e2>', '').replace('</e1>', '').replace('</e2>', '')
     print(cl, e1, e2)
 
     if rel_line.find('e1,e2') > 0:
