@@ -48,12 +48,12 @@ for block in blocks:
 
     e1 = re.search('<e1>(.*)</e1>', main).group(1).strip()
     e2 = re.search('<e2>(.*)</e2>', main).group(1).strip()
-    cl = main.replace('<e1> ', '').replace('<e2> ', '').replace(' </e1>', '').replace(' </e2>', '')
-    # print(cl, e1, e2)
+    cl = main.replace('<e1>', '').replace('<e2>', '').replace('</e1>', '').replace('</e2>', '')
+    print(cl, e1, e2)
 
     if rel_line.find('e1,e2') > 0:
         rel_type = rel_line.split('(')[0]
-        # print('rel_type', rel_type)
+        print('rel_type', rel_type)
 
     elif rel_line.find('e2,e1') > 0:
         rel_type = rel_line.split('(')[0]
@@ -100,7 +100,7 @@ def create_OpenNRE_dict(data):
                           'relation': item['rel_type'],
                           'sentence': item['sentence']}
 
-            # print(new_entry)
+            print(new_entry)
             res.append(new_entry)
 
         print('Number of items in dataset:', len(res))
