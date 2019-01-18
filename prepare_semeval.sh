@@ -23,14 +23,18 @@ cd ..
 rm $SE_FILE
 
 mv $SE_TEMP/scorer.pl $SE_TEST/
-
+echo "prepare train data"
 python3 create_opennre_dataset.py $SE_TEMP/train.txt
+
+echo "prepare word2vec"
 python3 create_word_embedding_model.py $SE_TEMP/train.txt
 python3 create_opennre_emb.py word2vec.model
+
 mv new.json $SE_DATASET/word_vec.json
 mv train.json $SE_DATASET/
 mv rel2id.json $SE_DATASET/
 
+echo "prepare test data"
 python3 create_opennre_dataset.py $SE_TEMP/test.txt
 mv train.json $SE_DATASET/test.json
 rm rel2id.json

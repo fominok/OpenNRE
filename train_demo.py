@@ -34,7 +34,7 @@ class model(nrekit.framework.re_model):
         self.mask = tf.placeholder(dtype=tf.int32, shape=[None, max_length], name="mask")
         
         # Embedding
-        x = nrekit.network.embedding.word_position_embedding(self.word, self.word_vec_mat, self.pos1, self.pos2)
+        x = nrekit.network.embedding.word_position_embedding(self.word, self.word_vec_mat, self.pos1, self.pos2, word_embedding_dim=50)
 
         # Encoder
         if model.encoder == "pcnn":

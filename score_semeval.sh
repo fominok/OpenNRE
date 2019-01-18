@@ -1,4 +1,4 @@
-python3 nre_to_scorer.py
+python3 nre_to_scorer.py semeval
 
 mv answer_keys.txt semeval_test/
 mv proposed_anwsers.txt semeval_test/

@@ -1,14 +1,18 @@
 import json
+import sys
 
-with open('data/semeval/rel2id.json') as f:
+if len(sys.argv) > 1:
+    dataset_name = sys.argv[1]
+
+with open(f'data/{dataset_name}/rel2id.json') as f:
     rels = json.load(f)
 
 rels_rev = {v: k for k, v in rels.items()}
 
-with open('test_result/semeval_pcnn_att_pred.json') as f:
+with open(f'test_result/{dataset_name}_pcnn_att_pred.json') as f:
     test_results = json.load(f)
 
-with open('data/semeval/test.json') as f:
+with open(f'data/{dataset_name}/test.json') as f:
     test_data = json.load(f)
 
 answers = {}
