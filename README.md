@@ -586,7 +586,7 @@ Result from scorer.pl:
     
     <<< The official score is (9+1)-way evaluation with directionality taken into account: macro-averaged F1 = 58.40% >>>
 
-###DBPedia
+## DBPedia
 
 We take from DBPedia data about companies and it's foundation year.
 
