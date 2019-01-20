@@ -20,8 +20,8 @@ FIRST_SENTENCE_ONLY = True
 REPLACE_COMPANY_NAME = True                 # convert sentences to lowercase (needed for OpenNRE)
 COMPANY_NAME_REPLACEMENT = "IBM"            # convert sentences to lowercase (needed for OpenNRE)
 
-NEGATIVE_TYPE = 'Unrelated'
-BINARY_TYPE = 'locatedAt'
+NEGATIVE_TYPE = 'Unrelated-Date'
+BINARY_TYPE = 'LocatedAt-Date'
 year_pattern = re.compile('[0-9]{3,4}')     # naive version, takes just 3 or for digit numbers
 
 
