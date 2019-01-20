@@ -140,7 +140,7 @@ Here are some results based on Semeval's scorer
 | Semeval | birnn att  | NYT      | 58.65% | with tags     |
 | Semeval | pcnn att   | NYT      | 77.24% | without tags  |
 | Semeval | pcnn att   | Semeval  | 58.40% | without tags |
-| DBPedia | pcnn att   | Texext   | 23.8%  | without tags  |
+| DBPedia | pcnn att   | Texext   | 63.82%  | without tags  |
 
 NYT - [NYT10 Dataset](https://github.com/thunlp/OpenNRE#nyt10-dataset)
 
