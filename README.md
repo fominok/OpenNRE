@@ -81,7 +81,7 @@ From DBpedia we extract:
 * rdfs:label
 
 
-Result is stored in DBPedia/data/raw.json in intermediate format:
+This data we store in DBPedia/data/raw.json in intermediate format:
 
     [
         {
