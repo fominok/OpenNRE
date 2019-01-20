@@ -1,3 +1,5 @@
+#!/bin/sh
+
 python3 nre_to_scorer.py semeval
 
 mv answer_keys.txt semeval_test/
