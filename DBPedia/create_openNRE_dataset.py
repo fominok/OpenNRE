@@ -8,31 +8,26 @@ import re
 from dateutil import parser
 
 
-############################### configuration section ##################################
-TRAIN_FN = "data/train.json"
-TEST_FN = "data/test.json"
-SENTENCE_MUST_CONTAIN_COMPANY = True  ## only include sentences in the result that contain the company_name
-BINARY_LOCATION = True
-SKIP_IF_NOT_FOUND_IN_EMBEDDINGS = True
+# Configuration section
+TRAIN_FILE = "data/train.json"
+TEST_FILE = "data/test.json"
 EMB_FILE = 'data/word_vec.json'
-##FULL_PARAGRAPH=False# instead of sentences, use the full paragraph as input data?
-FIRST_SENTENCE_ONLY = True
-TO_LOWER = False  ## convert sentences to lowercase (needed for OpenNRE_old)
-REPLACE_COMPANY_NAME = True  ## convert sentences to lowercase (needed for OpenNRE)
-COMPANY_NAME_REPLACEMENT = "IBM"  ## convert sentences to lowercase (needed for OpenNRE)
 
-#################### constants
+SENTENCE_MUST_CONTAIN_COMPANY = True        # only include sentences in the result that contain the company_name
+BINARY_RELATION = True
+SKIP_IF_NOT_FOUND_IN_EMBEDDINGS = True
+FIRST_SENTENCE_ONLY = True
+REPLACE_COMPANY_NAME = True                 # convert sentences to lowercase (needed for OpenNRE)
+COMPANY_NAME_REPLACEMENT = "IBM"            # convert sentences to lowercase (needed for OpenNRE)
+
 NEGATIVE_TYPE = 'Unrelated'
 BINARY_TYPE = 'locatedAt'
-tag_pattern = re.compile('[0-9]{3,4}')
-
-count = None
-if len(sys.argv) > 1:
-    count = int(sys.argv[1])
+year_pattern = re.compile('[0-9]{3,4}')     # naive version, takes just 3 or for digit numbers
 
 
-class DSItem:
-    def __init__(self, sentence, company_name, date, relation_type):
+# class for representing information about company
+class CompanyRelation:
+    def __init__(self, company_name, sentence, date, relation_type):
 
         self.company_name = company_name
         self.foundation_date = date
@@ -46,20 +41,15 @@ class DSItem:
         if len(date.split(' ')) > 1:
             self.foundation_date = date.replace(' ', '_')
 
-            ## also replace in sentence
+            # also replace in sentence
             self.sentence = self.sentence.replace(date, self.foundation_date)
 
-        ##  replace " " with "_" in company_name and sentence
+        # replace " " with "_" in company_name and sentence
         if len(company_name.split(' ')) > 1:
             self.company_name = company_name.replace(' ', '_')
 
-            ## also replace in sentence
+            # also replace in sentence
             self.sentence = self.sentence.replace(company_name, self.company_name)
-
-        if TO_LOWER:
-            self.sentence = self.sentence.lower()
-            self.company_name = self.company_name.lower()
-            self.foundation_date = self.foundation_date.lower()
 
         if REPLACE_COMPANY_NAME:
             self.sentence = self.sentence.replace(self.company_name, COMPANY_NAME_REPLACEMENT)
@@ -75,10 +65,8 @@ class DSItem:
     def sentence_contains_company(self):
 
         if self.sentence.replace(' ', '').find(self.company_name.replace(' ', '')) > -1:
-            # print('contains:', self.company_name, '//', self.sentence)
             return True
         else:
-            # print('NOT contains:', self.company_name, '//', self.sentence)
             return False
 
 
@@ -101,41 +89,44 @@ def annotate(raw_entry):
 
 
 def extract_naive_dates(sent):
-    # tokens = nltk.word_tokenize(sent);
-    dates = tag_pattern.findall(sent)
+    dates = year_pattern.findall(sent)          # TODO: search not only year
 
     return dates
 
 
 def create_dataset(companies_data):
     ds_items = []
+
     for company_data in companies_data:
         foundation_date = parser.parse(company_data['year'])
-
         sentences = nltk.sent_tokenize(company_data["abstract"])
+        company_name = company_data['company'];
         tokenized_sentences = [nltk.word_tokenize(sentence) for sentence in sentences]
-        for sid, sentence in enumerate(sentences):
-            # print(sentence)
-            dates = extract_naive_dates(sentence)
-            if str(foundation_date.year) in dates:
-                date_str = str(foundation_date.year)
-                # print('add positive relation ' + company_data['company'] + ' date = ' + date_str)
-                # print('\n')
-                item = DSItem(tokenized_sentences[sid], company_data['company'], date_str, BINARY_TYPE)
-                ds_items.append(item)
 
-            for date in dates:
-                if str(foundation_date.year) == date:
-                    # print(date + ' = ' + str(foundation_date.year))
-                    # print('\n')
-                    continue
-                else:
-                    # print('add negative relation for' + company_data['company'] + ' date = ' + date)
-                    # print('\n')
-                    item = DSItem(tokenized_sentences[sid], company_data['company'], date, NEGATIVE_TYPE)
-                    ds_items.append(item)
+        for sent_id, sentence in enumerate(sentences):
+            dates = extract_naive_dates(sentence)
+            tokenized_sentence = tokenized_sentences[sent_id]
+
+            make_positive_relations(company_name, foundation_date, dates, tokenized_sentence, ds_items)
+            make_negative_relations(company_name, foundation_date, dates, tokenized_sentence, ds_items)
 
     return companies_data, ds_items
+
+
+def make_negative_relations(company_name, foundation_date, dates, tokenized_sentence, ds_items):
+    for date in dates:
+        if str(foundation_date.year) == date:
+            continue
+        else:
+            item = CompanyRelation(company_name, tokenized_sentence, date, NEGATIVE_TYPE)
+            ds_items.append(item)
+
+
+def make_positive_relations(company_name, foundation_date, dates, tokenized_sentence, ds_items):
+    if str(foundation_date.year) in dates:
+        date_str = str(foundation_date.year)
+        item = CompanyRelation(company_name, tokenized_sentence, date_str, BINARY_TYPE)
+        ds_items.append(item)
 
 
 def filter_ds_items(ds_items, sentence_must_contain_company=False):
@@ -167,7 +158,6 @@ def create_OpenNRE_dict(data):
             'sentence': item.sentence
         }
 
-        # print(new_entry)
         res.append(new_entry)
 
     print('Number of items in dataset:', len(res))
@@ -182,19 +172,13 @@ def write_dl_dataset(ds_items):
     train_ds = ds_items[:split]
     test_ds = ds_items[split:]
 
-    # [ds_item.write(train_fh) for ds_item in train_ds]
-    # [ds_item.write(test_fh)  for ds_item in test_ds]
-
     train_opennre = create_OpenNRE_dict(train_ds)
     test_opennre = create_OpenNRE_dict(test_ds)
 
-    # train_fh = open(TRAIN_FN, 'w')
-    # test_fh  = open(TEST_FN, 'w')
-
-    with open(TRAIN_FN, 'w', encoding='utf8') as outfile:
+    with open(TRAIN_FILE, 'w', encoding='utf8') as outfile:
         json.dump(train_opennre, outfile)
 
-    with open(TEST_FN, 'w', encoding='utf8') as outfile:
+    with open(TEST_FILE, 'w', encoding='utf8') as outfile:
         json.dump(test_opennre, outfile)
 
 
@@ -227,6 +211,10 @@ def check_if_NEs_in_embeddings(ds_items, emb_fn):
 
 
 if __name__ == '__main__':
+    count = None
+    if len(sys.argv) > 1:
+        count = int(sys.argv[1])
+
     print('creating dataset started\n')
     data = json.load(open('./data/raw-with-replaced-coreferences.json'))
 

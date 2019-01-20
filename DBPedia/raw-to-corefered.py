@@ -3,7 +3,14 @@ import os
 import sys
 import spacy
 
+# constants
+ITEMS_COUNT = 1000
+TARGET_PATH = "./data"
+TARGET_FILE = "raw-with-replaced-coreferences.json"
 
+
+# It should change all pronouns in abstract with company name. It allows to find relation between
+# company name and foundation year
 def replace_coreferences(raw_text):
     print("replacing coreferences...")
     nlp = spacy.load('en_coref_md')
@@ -18,25 +25,27 @@ def replace_coreferences(raw_text):
     return raw_text
 
 
-if __name__ == '__main__':
+def main():
     print("Reading raw data...")
 
     raw = json.load(open('./data/raw.json'))
 
     print("done; replacing coreferences...")
 
-    count = 1000
+    count = ITEMS_COUNT
     if len(sys.argv) > 1:
         count = int(sys.argv[1])
     replaced = replace_coreferences(raw[:count])
 
-    target_path = "./data"
-    target_file = "raw-with-replaced-coreferences.json"
-    print("done; writing to {0}/{1} file...".format(target_path, target_file))
+    print("done; writing to {0}/{1} file...".format(TARGET_PATH, TARGET_FILE))
 
-    if not os.path.exists(target_path):
-        os.makedirs(target_path)
+    if not os.path.exists(TARGET_PATH):
+        os.makedirs(TARGET_PATH)
 
-    json.dump(replaced, open("{0}/{1}".format(target_path, target_file), "w+"))
+    json.dump(replaced, open("{0}/{1}".format(TARGET_PATH, TARGET_FILE), "w+"))
 
     print("done; ready to annotate")
+
+
+if __name__ == '__main__':
+    main()
