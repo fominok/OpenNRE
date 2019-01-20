@@ -15,10 +15,6 @@ from nltk.corpus import stopwords
 
 
 def train_model(sents):
-    """
-        training a gensim model, see also: https://radimrehurek.com/gensim/models/word2vec.html
-    """
-    # min-count: only include words in the model with a min-count
     return gensim.models.Word2Vec(sents, min_count=2, size=50, workers=4, window=10, iter=25)
 
 
@@ -50,7 +46,8 @@ class SentencesProvider:
                 clean_sentence = BeautifulSoup(sentence, 'html.parser').get_text()
                 tokens = word_tokenize(clean_sentence)
                 tokens = [t.lower() for t in tokens]
-                words = list(filter(lambda s: s.isalpha() and s not in stopwords.words('english'), tokens)) # map(lambda s: wordnet_lemmatizer.lemmatize(s)
+                words = list(filter(lambda s: s.isalpha() and s not in stopwords.words('english'), tokens))
+                # words = gensim.utils.simple_preprocess(clean_sentence)
                 sentences.append(words)
 
         self.sentences = sentences
