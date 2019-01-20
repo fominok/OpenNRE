@@ -1,5 +1,30 @@
 # OpenNRE for NLP course, autumn 2018
 
+This repository is a fork of OpenNRE project with additional scripts
+to apply it to SemEval2010 dataset and custom dataset built from DBPedia.
+Thus, the work can be roughly divided into 2 parts mostly independent:
+
+
+1. [Applying OpenNRE to SemEval2010](#semeval)
+2. [Applying OpenNRE to DBpedia custom dataset](#dbpedia)
+
+## Semeval
+
+### Description
+
+Being unrelated, OpenNRE and SemEval use different format for their datasets, also SemEval's
+scorer uses its own format too. The main task for this part is to write converters for formats
+used in these tools. 
+
+* `prepare_semeval.sh` is a shell script to automatically download SemEval files, unpack them and prepare 
+a compatible dataset
+* `create_opennre_dataset.py` is responsible for converting dataset from SemEval format to OpenNRE one;
+is is used for train data as well as for test data
+* `nre_to_scorer.py` is used after permforming OpenNRE testing to create files compatible with SemEval scorer: 
+is uses test data created by `create_opennre_dataset.py` and test results given by OpenNRE's testing script
+
+### Evaluation steps
+
 Step 0, remove cache:
 
     rm -r _processed_data
