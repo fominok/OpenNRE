@@ -23,6 +23,8 @@ is is used for train data as well as for test data
 * `nre_to_scorer.py` is used after permforming OpenNRE testing to create files compatible with SemEval scorer: 
 is uses test data created by `create_opennre_dataset.py` and test results given by OpenNRE's testing script
 
+OpenNRE's format is well described on OpenNRE [GitHub page](https://github.com/thunlp/OpenNRE).
+
 ### Evaluation steps
 
 Step 0, remove cache:
@@ -70,7 +72,7 @@ DBPedia provides SPARQL endpoint which allows to query specific data from DBPedi
 experiments and so on. We used this SPARQL endpoint to download informations about companies (like Google, Coca-Cola etc.)
 and its foundation date to train OpenNRE neural network to find relations between company name and foundation date in text.
 
-Our approach to work with DBpedia is taken from https://github.com/soylent-grin/textext
+Our approach in work with DBpedia is taken from [soylent-grin/textext repo](https://github.com/soylent-grin/textext)
 
 From DBpedia we extract:
 
@@ -78,9 +80,6 @@ From DBpedia we extract:
 * dbo:foundingYear
 * rdfs:label
 
-for extracting data run:
-
-    python dbpedia_load.py
 
 Result is stored in DBPedia/data/raw.json in intermediate format:
 
@@ -100,14 +99,14 @@ Install neuralcoref from repo:
     cd neuralcoref
     pip install -e .
     
-And run:
-    
-    python raw-to-corefered.py $COUNT # $COUNT is number of first raw entries to parse. Default is 1000.
-    
-OpenNRE uses its own format of input data in json. Format is well described on OpenNRE [GitHub page](https://github.com/thunlp/OpenNRE).
-We should convert data to this format:
+Main scripts:
 
-    python create_openNRE_dataset.py
+* `dbpedia_load.py` - extracting date from DBPedia by SPARQL endpoint.
+* `raw-to-corefered.py $COUNT` - replacing coreferences in abstract. `$COUNT` is number of first raw entries to parse. Default is 1000.
+* `create_openNRE_dataset.py` - converting json with DBpedia data to OpenNRE format. It has many config options,
+they a described [here](https://github.com/soylent-grin/textext/blob/master/OpenNRE/readme.md#configuration-of-create_opennre_datasetpy).
+* `prepare_dbpedia.sh` - automatically run previous three sctipts.
+* `score_dbpedia.sh` - runs scorer.pl script which gives marks of classificator worl.
     
 Steps for downloading data, replacing coreferences and mapping data format are described in `prepare_dbpedia.sh`,
 that's you can just execute it.
@@ -126,7 +125,7 @@ Result:
 
     [TEST] auc: 0.5818072533499661
     
-Another provided script will prepare data and execute SemEval's scorer on dbpedia model:
+Prepare data and execute SemEval's scorer on dbpedia model:
 
     sh score_semeval.sh
 
