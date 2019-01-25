@@ -140,13 +140,13 @@ Here are some results based on Semeval's scorer
 | Semeval | birnn att  | NYT      | 58.65% | with tags     |
 | Semeval | pcnn att   | NYT      | 77.24% | without tags  |
 | Semeval | pcnn att   | Semeval  | 58.40% | without tags |
-| DBPedia | pcnn att   | Texext   | 63.82%  | without tags  |
+| DBPedia | pcnn att   | Texext   | 80.25%  | without tags  |
 
 NYT - [NYT10 Dataset](https://github.com/thunlp/OpenNRE#nyt10-dataset)
 
 Semeval - Created on [semeval dataset](https://github.com/davidsbatista/Annotated-Semantic-Relationships-Datasets#semeval-2010)
 
-Texext - word_vec stealed from [soylent-grin/textext](https://github.com/soylent-grin/textext/tree/master/OpenNRE) repo
+Texext - word_vec stealed from [soylent-grin/textext](https://github.com/soylent-grin/textext/tree/master/OpenNRE) repo. But them stealed it from NYT dataset.
 
 Tags column says about special tags in training dataset. Originally semeval data looks like this:
 
@@ -155,3 +155,26 @@ Tags column says about special tags in training dataset. Originally semeval data
     
 And in the beginning of our work we didn't remove tags `<e1>` and `<e2>`. Only after they were removed
 result made better.
+
+## Problems
+
+### DBPedia
+
+Coreference replacing works not wery well. Sometimes it replaces pronouns not only with company name, but also with some data after company name (espaccialy text in brackets). Here program thought that comapny name is `Lantis Company, Limited (\u682a\u5f0f\u4f1a\u793e\u30e9\u30f3\u30c6\u30a3\u30b9 Kabushiki-gaisha Rantisu)`:
+
+    {
+        "abstract": "Lantis Company, Limited (\u682a\u5f0f\u4f1a\u793e\u30e9\u30f3\u30c6\u30a3\u30b9 Kabushiki-gaisha Rantisu) is a Japanese company that specializes as a music publisher label for Japanese musicians, anime soundtracks and video game soundtracks.
+            Lantis Company, Limited (\u682a\u5f0f\u4f1a\u793e\u30e9\u30f3\u30c6\u30a3\u30b9 Kabushiki-gaisha Rantisu) was established on November 26, 1999, and in May 2006,
+            Lantis Company, Limited (\u682a\u5f0f\u4f1a\u793e\u30e9\u30f3\u30c6\u30a3\u30b9 Kabushiki-gaisha Rantisu) was bought by, and became a subsidiary of, Bandai Visual.
+            Lantis Company, Limited (\u682a\u5f0f\u4f1a\u793e\u30e9\u30f3\u30c6\u30a3\u30b9 Kabushiki-gaisha Rantisu) is now a subsidiary of Bandai Namco Holdings.",
+        "company": "Lantis (company)",
+        "year": "1999"
+    },
+    
+Our program get only year of foundation date and miss everything about day and month. It was done only for simplicity, but is not the best solution.
+
+There are some problems with `demo_test.py`, it provides `score: NaN`. To prevent this some changes were made in script like [here](https://github.com/thunlp/OpenNRE/issues/89) were adviced. 
+
+    _weights_matrix with np.ones(..) instead of np.zeros()
+    
+It was not fixed in OpenNRE repository yet.
